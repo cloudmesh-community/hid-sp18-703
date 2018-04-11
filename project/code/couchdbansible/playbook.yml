@@ -1,5 +1,5 @@
 ---
-- hosts: couchdb_hosts
+- hosts: couchdb_Coordination_host:couchdb_hosts
   remote_user: root
   roles:
-    - r
+    - couchdb

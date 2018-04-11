@@ -1,2 +1,5 @@
+[couchdb_Coordination_host]
+129.114.110.10 ansible_ssh_user=cc
+
 [couchdb_hosts]
-129.114.33.143 ansible_ssh_user=cc
+129.114.33.5 ansible_ssh_user=cc

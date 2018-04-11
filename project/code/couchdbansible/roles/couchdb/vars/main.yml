@@ -1,2 +1,5 @@
 ---
-# vars file for r
+# vars file for couchdb
+nodes_number: 2
+replica: 3
+shard: 8

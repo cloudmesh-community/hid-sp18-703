@@ -1,19 +1,128 @@
 ---
-# tasks file for r
-- name: install CouchDB on Ubuntu 16.04
+# tasks file for couchdb
+- name: install dependencies erlang
+  become: yes
+  apt: name=erlang update_cache=yes state=present
+  register: erlanginstalled
+
+- name: install dependencies ICU
+  become: yes
+  apt: name=libicu-dev update_cache=yes state=present install_recommends=yes
+  register: ICUinstalled
+
+- name: install dependencies SpiderMonkey
+  become: yes
+  apt: name=libmozjs185-dev update_cache=yes state=present install_recommends=yes
+  register: SpiderMonkeyinstalled
+
+- name: install dependencies libcurl
+  become: yes
+  apt: name=libcurl4-openssl-dev update_cache=yes state=present install_recommends=yes
+  register: libcurlinstalled
+
+- name: add CouchDB package repository
+  become: yes
+  apt_repository:
+    repo: deb https://apache.bintray.com/couchdb-deb xenial main
+    state: present
+  register: couchdbpackageenabled
+
+- name: install repository key
+  become: yes
+  apt_key:
+     url: https://couchdb.apache.org/repo/bintray-pubkey.asc
+     state: present
+  register: Repokeyinstalled
+
+- name: install CouchDB
   become: yes
   apt: name=couchdb update_cache=yes state=present
   register: couchdbinstalled
 
-- name: start CouchDB
+- name: change the node name in vm.args file
   become: yes
-  command: /etc/init.d/couchdb start
+  template: src=vmargs.j2 dest=/opt/couchdb/etc/vm.args
   when: couchdbinstalled|success
-  register: couchdbstarted
+  register: vmfileupdated
 
 - name: stop CouchDB
   become: yes
-  command: /etc/init.d/couchdb stop
-  when: couchdbstarted|success
-  register: couchdbstopped
+  command: service couchdb stop
+  when: vmfileupdated|success
+  register: couchdbstoped
 
+- name: start CouchDB
+  become: yes
+  command: service couchdb start
+  when: couchdbstoped|success
+  register: couchdbstarted
+
+# delete couchdb@127.0.0.1 from nodes after renaming node names
+- name: delete couchdb@127.0.0.1
+  uri:
+    url: http://127.0.0.1:5986/_nodes/couchdb@127.0.0.1?rev=1-967a00dff5e02add41819138abb3284d
+    method: DELETE
+  
+- name: enable couchdb cluster
+  uri:
+    url: http://127.0.0.1:5984/_cluster_setup
+    method: POST
+    status_code: 201
+    body_format: json
+    body: '{"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "admin", "password":"password", "node_count":"{{nodes_number}}"}'
+    header:
+      Content-Type: "application/json"
+
+- name: add nodes to couchdb cluster step1
+  uri:
+    url: http://127.0.0.1:5984/_cluster_setup
+    method: POST
+    user: admin
+    password: password
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    body: '{"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "admin", "password":"password", "port": 5984, "node_count": "{{nodes_number}}", "remote_node": "{{ item }}", "remote_current_user": "admin", "remote_current_password": "password" }'
+    header:
+      Content-Type: "application/json"
+  with_items: "{{groups['couchdb_hosts']}}"
+  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+
+- name: add nodes to couchdb cluster step2
+  uri:
+    url: http://127.0.0.1:5984/_cluster_setup
+    method: POST
+    user: admin
+    password: password
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    body: '{"action": "add_node", "host":"{{ item }}", "port": 5984, "username": "admin", "password":"password"}'
+    header:
+      Content-Type: "application/json"
+  with_items: "{{groups['couchdb_hosts']}}"
+  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+  
+- name: finish cluster setup
+  uri:
+    url: http://127.0.0.1:5984/_cluster_setup
+    method: POST
+    user: admin
+    password: password
+    force_basic_auth: yes
+    status_code: 201
+    body_format: json
+    body: '{"action": "finish_cluster"}'
+    header:
+      Content-Type: "application/json"
+  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+
+- name: create Database with shards
+  uri:
+    url: http://127.0.0.1:5984/test?n={{ replica }}&q={{ shard }}
+    method: PUT
+    user: admin
+    password: password
+    force_basic_auth: yes
+    status_code: 201
+  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
