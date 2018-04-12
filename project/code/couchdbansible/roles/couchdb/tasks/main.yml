@@ -72,6 +72,7 @@
     body: '{"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "admin", "password":"password", "node_count":"{{nodes_number}}"}'
     header:
       Content-Type: "application/json"
+  when: cluster_setup and inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
 
 - name: add nodes to couchdb cluster step1
   uri:
@@ -86,7 +87,7 @@
     header:
       Content-Type: "application/json"
   with_items: "{{groups['couchdb_hosts']}}"
-  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+  when: cluster_setup and inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
 
 - name: add nodes to couchdb cluster step2
   uri:
@@ -101,7 +102,7 @@
     header:
       Content-Type: "application/json"
   with_items: "{{groups['couchdb_hosts']}}"
-  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+  when: cluster_setup and inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
   
 - name: finish cluster setup
   uri:
@@ -115,7 +116,15 @@
     body: '{"action": "finish_cluster"}'
     header:
       Content-Type: "application/json"
-  when: inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+  when: cluster_setup and inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+
+# create admin user for single node setup
+- name: create admin user for single node setup
+  uri:
+    url: http://127.0.0.1:5984/_node/couchdb@{{ inventory_hostname }}/_config/admins/admin
+    method: PUT
+    body: '"password"'
+  when: not cluster_setup
 
 - name: create Database with shards
   uri:

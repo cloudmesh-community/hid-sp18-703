@@ -1,5 +1,5 @@
 ---
-# vars file for couchdb
 nodes_number: 2
-replica: 3
-shard: 8
+cluster_setup: false
+replica: 1
+shard: 2
