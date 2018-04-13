@@ -17,7 +17,7 @@ duration=$SECONDS
 echo "bulkloadtime" > couchDBWriteJson.csv
 echo "$duration" >> couchDBWriteJson.csv
 
-echo "the time taken to load json file into couchDB is $duration seconds"
+echo "finished loading json file into couchDB"
 
 echo  "Starting finding document in couchDB"
 SECONDS=0 
@@ -25,7 +25,24 @@ ssh cc@$ip 'curl -X POST -H "Content-Type: application/json"  http://admin:passw
 duration_find=$SECONDS
 echo "finddocumenttime" > couchDBFindJson.csv
 echo "$duration_find" >> couchDBFindJson.csv
-echo "the time taken to find document in couchDB is $duration_find seconds"
+echo "finished find document from couchDB "
+
+#copying file to  remote server for view in couchdb
+scp ./mapreducefun.js cc@$ip:/home/cc
+
+echo  "Starting mapreduce view on couchDB"
+SECONDS=0
+ssh cc@$ip 'curl -X PUT http://admin:password@127.0.0.1:5984/test/_design/qualitymap -d @/home/cc/mapreducefun.js'
+
+#to get the total number of records where quality is greater than 5 
+ssh cc@$ip 'curl -X GET http://admin:password@127.0.0.1:5984/test/_design/qualitymap/_view/qualityTotal'
+
+duration_find=$SECONDS
+echo "Mapreducettime" > couchDBMapJson.csv
+echo "$duration_map" >> couchDBMapJson.csv
+echo "finished mapreduce view couchDB"
+
+
 
 paste -d, couchDBWriteJson.csv couchDBFindJson.csv > ./CouchDBBenchmark/benchmark_$(date +'%d%m%Y%H%M').csv
 
