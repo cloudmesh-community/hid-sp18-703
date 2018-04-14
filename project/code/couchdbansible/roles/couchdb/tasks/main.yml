@@ -1,5 +1,16 @@
 ---
 # tasks file for couchdb
+
+- name: install pip
+  become: yes
+  apt: name=python-pip update_cache=yes state=present
+  register: pipinstalled
+
+- name: install pandas
+  become: yes
+  pip: name=pandas state=present
+  register: pandasinstalled
+  
 - name: install dependencies erlang
   become: yes
   apt: name=erlang update_cache=yes state=present
@@ -72,7 +83,7 @@
     body: '{"action": "enable_cluster", "bind_address":"0.0.0.0", "username": "admin", "password":"password", "node_count":"{{nodes_number}}"}'
     header:
       Content-Type: "application/json"
-  when: cluster_setup and inventory_hostname == "{{ groups.couchdb_Coordination_host[0] }}"
+  when: cluster_setup
 
 - name: add nodes to couchdb cluster step1
   uri:

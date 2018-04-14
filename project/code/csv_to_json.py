@@ -1,10 +1,10 @@
 # python script that converts the csv data into proper json format that is suitable for loading data into couchDB 
 # Author: Ribka Rufael
 import pandas 
-import urllib.request
+import urllib
 
 # read wine data from UCI data repository
-winedata = urllib.request.urlopen("https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv")
+winedata = urllib.urlopen("https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-white.csv")
 
 # load the csv file into dataframe sckipping first row
 winedata_df = pandas.read_csv(winedata,skiprows=1, header=None,sep=';',names = [
