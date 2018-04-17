@@ -1,0 +1,2 @@
+Cluster_Setup,replica_val,shard_val,CouchDBInstall_time,bulkloadtime,finddocumenttime,Mapreducettime
+true,3,4,57,2,1,3
