@@ -3,7 +3,7 @@
   "views": {
     "qualityTotal": {
       "map": "function(doc) {
-  if (doc.quality >5) {
+  if (doc.quality >3) {
     emit(doc. quality, 1);
   }
 }",

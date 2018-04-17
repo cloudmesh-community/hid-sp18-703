@@ -1,5 +1,5 @@
 ---
 nodes_number: 2
 cluster_setup: true
-replica: 8
-shard: 4
+replica: 3
+shard: 10

@@ -23,7 +23,7 @@ echo "finished loading json file into couchDB"
 
 echo  "Starting finding document in couchDB"
 start=`date +%s`
-ssh cc@$ip 'curl -X POST -H "Content-Type: application/json"  http://admin:password@127.0.0.1:5984/test/_find -d '\''{"selector": {"quality": {"$gt": 6}},"fields": ["_id", "_rev", "quality"],"skip": 0,"execution_stats": true}'\''' > ./logs/output.txt
+ssh cc@$ip 'curl -X POST -H "Content-Type: application/json"  http://admin:password@127.0.0.1:5984/test/_find -d '\''{"selector": {"quality": {"$gt": 3}},"fields": ["_id", "_rev", "quality"],"skip": 0,"execution_stats": true}'\''' > ./logs/output.txt
 end=`date +%s`
 runtime=$((end-start))
 echo "finddocumenttime" > ./CouchDBBenchmark/couchDBFindJson.csv
@@ -37,7 +37,7 @@ echo  "Starting mapreduce view on couchDB"
 start=`date +%s`
 ssh cc@$ip 'curl -X PUT http://admin:password@127.0.0.1:5984/test/_design/qualitymap -d @/home/cc/mapreducefun.js' > ./logs/output.txt
 
-#to get the total number of records where quality is greater than 5 
+#to get the total number of records where quality is greater than 3 
 ssh cc@$ip 'curl -X GET http://admin:password@127.0.0.1:5984/test/_design/qualitymap/_view/qualityTotal' > ./logs/output.txt
 
 end=`date +%s`

@@ -5,14 +5,16 @@ start=`date +%s`
 cluster_setup_val=$1
 replica_val=$2
 shard_val=$3
-rm ./couchdbansible/roles/couchdb/vars/main.yml
-echo "---" > ./couchdbansible/roles/couchdb/vars/main.yml
-echo "nodes_number: 2" >> ./couchdbansible/roles/couchdb/vars/main.yml
+# delete main.yml
+rm ./couchdbansible/roles/couchdb/vars/main.yml # delete existing main.yml
+echo "---" > ./couchdbansible/roles/couchdb/vars/main.yml # creating empty main.yml
+# adding variables needed for ansible tasks
+echo "nodes_number: 2" >> ./couchdbansible/roles/couchdb/vars/main.yml 
 echo "cluster_setup: $cluster_setup_val" >> ./couchdbansible/roles/couchdb/vars/main.yml
 echo "replica: $replica_val" >> ./couchdbansible/roles/couchdb/vars/main.yml
 echo "shard: $shard_val" >> ./couchdbansible/roles/couchdb/vars/main.yml
 
-
+# running ansible playbook
 ansible-playbook -e 'host_key_checking=False' -i ./couchdbansible/inventory.txt ./couchdbansible/playbook.yml > ./logs/output.txt
 
 end=`date +%s`

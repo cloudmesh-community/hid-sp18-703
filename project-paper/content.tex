@@ -32,7 +32,7 @@
 
 \section{Introduction}
 
-CouchDB \cite{www-Couchdb} is a no sql database management system
+CouchDB~\cite{www-Couchdb} is a no sql database management system
 under Apache. Data is stored as documents in CouchDB. In this project
 CouchDB cluster of one or more Chameleon cloud VMs is deployed using
 Ansible playbook and benchmarking is done to measure the time it took
@@ -40,7 +40,7 @@ for deployement using Bash scripts. After installation of CouchDB
 cluster on Chameleon cloud VM, benchmarking test will be performed on
 measuring write and read time on CouchDB database. The dataset which
 was used for write and read on CouchDB is the wine quality dataset
-from UCI Machine Learning Repository  ~\cite{www-WineQuality}.
+from UCI Machine Learning Repository~\cite{www-WineQuality}.
 
 \section{Execution Plan}
 
@@ -93,7 +93,7 @@ and read time.
 Ansible is a tool that help automate software deployments, system
 configuration and continues deployment of applications. Automation
 tasks are defined in Ansible Playbooks using YAML language. For
-transportation, Ansible uses OpenSSH \cite{www-Ansible}. 
+transportation, Ansible uses OpenSSH~\cite{www-Ansible}. 
 
 For this project, Ansible was used to install CouchDB, configure
 CouchDB in single node or cluster configuration and to create database
@@ -107,9 +107,9 @@ Foundation (NSF). Reaserchers will be able to investigate and come up
 with solutions for problems in Software as a Service, Platforms as a
 Service and vitual technologies. Both Bare metal and OpenStack Virtual
 environements are available for researchers to use on Chameleon
-project \cite{www-Chameleon}. For this project, OpenStack virtual
+project~\cite{www-Chameleon}. For this project, OpenStack virtual
 machines were used and VM instance management was done through the
-OpenStack web user interface \cite{www-ChameleonDoc}. 
+OpenStack web user interface~\cite{www-ChameleonDoc}. 
 
 \section{Python}
 Python programing language was used in this project to develop script
@@ -138,7 +138,7 @@ an administration user interface. Multi-Version Concurrency Control
 (MVCC) is used as concurrency model in CouchDB. CouchDB uses views to
 present structured data to users and applications. Views are
 implemented in Javascript, use mapreduce model and are stored under
-the design documents \cite{www-Couchdb}. 
+the design documents~\cite{www-Couchdb}. 
 
 \subsection{Version}
 The version of CouchDB used for this project is version 2.1.1 and this
@@ -149,14 +149,14 @@ CouchDB 2.1.1 provides two setup configurations. These setup
 configurations are single node and clustered configurations. As the
 name suggests, CouchDB in single node configuration runs on a single
 node. Whereas in clustered configuration CouchDB runs on multiple
-nodes or servers \cite{www-Couchdb, www-CouchdbOverview}.
+nodes or servers~\cite{www-Couchdb, www-CouchdbOverview}.
 
 \subsection{Security}
 The ports that are used by CouchDB cluster are 5984 and 5986. Port
 4369 is used by Erlang to identify the nodes in CouchDB cluster. Also
 ports 9100-9200 for Erlang on different VMs to communicate to each
 other. These ports should be opened to accept TCP protocol for all the
-servers or VMs that are in the cluster \cite{www-CouchdbSetup}. 
+servers or VMs that are in the cluster~\cite{www-CouchdbSetup}. 
 In the deployment for this project, security group rules were
 created in Chameleon cloud which opened inbound TCP protocol for ports
 5984, 5986 and 9100-9200.
@@ -181,12 +181,12 @@ Node2             & Ubuntu16.04-20180205 & m1.medium     & 4GB          & 2     
 \end{tabular}
 \end{table}
 
-After starting two Instance  with the specification in Table 1
-\ref{t:resource-specification}, allocating floating IPs to these
+After starting two Instance  with the specification in Table
+1~\ref{t:resource-specification}, allocating floating IPs to these 
 instance and adding the security rules as mentioned under Security
 section, user has to manually insert the IP addresses by modifying
-inventory.txt file which is found under /project/code/couchdbansible
-directory.
+inventory.txt file which is found under /project-code/couchdbansible
+directory. 
 
 \subsection{couchdbinstall.sh}
 
@@ -199,7 +199,53 @@ deploys CouchDB in cluster configuration and creates a database with 8
 replicas and 4 shards.
 
 The Ansible script that deploys CouchDB and it's dependencies are run
-within couchdbinstall.sh
+within couchdbinstall.sh. This script also creates csv file which
+contains information about cluster setup, number of replicas, number
+of shards and the time it took for couchDB install.
+
+\subsection{Ansible Scripts}
+All Ansible scripts reside under /project-code/couchdbansible
+directory. 
+\begin{enumerate}
+  \item playbook.yml- defines the hosts on which CouchDB will be
+    installed and the role name. This file along with inventory.txt is
+    needed when runing Ansible playbook.
+
+  \item main.yml-this file which is found under /roles/couchdb/tasks
+    directory and this where all the installation tasks are
+    defined. Some of the tasks defined are installation of Python
+    pandas module since the VM in Chameleon did not have pandas
+    installed, installation of CouchDB 2.1.1 and all it's dependencies
+    and database creation after the installation of CouchDB.
+
+  \item vmargs.j2- under /roles/couchdb/templates directory, template
+    file that defines the CouchDB node names with the correct IP addresses.
+\end{enumerate}
+
+\subsection{Deploy Time}
+The time taken for deployment of CouchDB on two Chameleon VMs was recorded for different
+scenarios. As it can be seen in table~\ref{t:CouchDB-DeployTime},
+CouchDB was installed in single node configuration/cluster configuration and different
+number of replicas and shards. The first scenario which is basic installation of CouchDB
+in single node configuration and no replicas and shards took 54 seconds
+amount of time to finish. The sceond scenario, installation of CouchDB
+in cluser configuration with two nodes configuration, 3 replicas and
+8 shards took 52 seconds. The third scenario, installation of CouchDB
+in cluser configuration with two nodes configuration, 4 replicas and
+12 shards took 53 seconds. 
+
+\begin{table}[]
+\centering
+\caption{CouchDB Deploy Time}
+\label{t:CouchDB-DeployTime}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+  & \textbf{Cluster\_Setup} & \textbf{replica\_val} & \textbf{shard\_val} & \textbf{Install time in seconds} \\ \hline
+1 & False                   & 1                     & 1                   & 54                               \\ \hline
+2 & True                    & 3                     & 8                   & 52                               \\ \hline
+4 & True                    & 4                     & 12                  & 53                               \\ \hline
+\end{tabular}
+\end{table}
 
 \section{Benchmark Results}
 \subsection{Dataset}
@@ -214,6 +260,14 @@ format, \verb|csv_to_json.py| python script was used to
 download the white wine dataset directly from UCI Machine Learning
 Repository and convert the CSV file into JSON format by utilizing
 pandas and urllib python modules.
+
+\subsection{DatasetBulkLoadReadCouchDB.sh}
+This is the script when excuted, loads the JSON wine sample dataset
+into CouchDB, performs simple read operation on the wine sample
+dataset in CouchDB and mapreduce on the wine sample
+dataset in CouchDB.
+
+
 
 \section{Conclusion}
 TBD
