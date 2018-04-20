@@ -42,53 +42,6 @@ measuring write and read time on CouchDB database. The dataset which
 was used for write and read on CouchDB is the wine quality dataset
 from UCI Machine Learning Repository~\cite{www-WineQuality}.
 
-\section{Execution Plan}
-
-This section depicts week by week execution plan for the project. My
-plan is to finish the project in six weeks.
-
-\subsection{Week 1}
-
-I was able to develop an initial Ansible script that will deploy
-CouchDB on Ubuntu 16.04 VM, upon successul installation the script
-will start CouchDB and then it will stop CouchDB on the remote VM. I
-booted Chameleon VM using Cloudmesh and then run Ansible playbook from
-my local machine. The tasks in my playbook run successfully.
-
-\subsection{Week 2}
-
-Run Ansible playbook to deploy CouchDB on Chameleon Cloud
-VM. Benchmark time it takes to deploy CouchDB on Chameleon Cloud VM
-
-\subsection{Week 3}
-
-Extend the Ansible script developed in Week 1 to deploy CouchDB into
-two Chameleon Cloud VMs.
-
-\subsection{Week 4}
-
-Run Ansible playbook to deploy CouchDB on two Chameleon Cloud
-VMs. Benchmark time it takes to deploy CouchDB on Chameleon Cloud VMs.
-
-\subsection{Week 5}
-
-Analysis of the benchmark results for deployment of CouchDB
-cluster. Document results in report and finalize report.
-
-\subsection{Week 6}
-
-Load the wine review dataset into CouchDB database, benchmark write time
-and read time. 
-
-
-
-\section{Technologies Used}
-
-\begin{itemize}
-\item[$\bullet$] Ansible
-\item[$\bullet$] Chameleon Cloud
-\item[$\bullet$] Other technologies TBD
-\end{itemize}
 \section{Ansible}
 Ansible is a tool that help automate software deployments, system
 configuration and continues deployment of applications. Automation
@@ -253,7 +206,7 @@ The dataset that was used for the benchmarking process for this
 project is the white vinho verde varient of Portuguese wine sample
 from UCI Machine Learning Repository. The dataset was in CSV file
 format and contains twelve different attributes related to wine such
-as fixed acidity,pH, alcohol and quality ~\cite{www-WineQuality}. 
+as fixed acidity,pH, alcohol and quality~\cite{www-WineQuality}. 
 
 Since CouchDB bulk load process only accepts file in proper JSON
 format, \verb|csv_to_json.py| python script was used to
@@ -262,11 +215,51 @@ Repository and convert the CSV file into JSON format by utilizing
 pandas and urllib python modules.
 
 \subsection{DatasetBulkLoadReadCouchDB.sh}
-This is the script when excuted, loads the JSON wine sample dataset
+This is the script when executed, loads the JSON wine sample dataset
 into CouchDB, performs simple read operation on the wine sample
 dataset in CouchDB and mapreduce on the wine sample
-dataset in CouchDB.
+dataset in CouchDB and measures the time taken for each operation.
 
+\begin{enumerate}
+  \item The first thing this script does is, it copies \verb|csv_to_json.py|
+python script to the remote VM and executes this python script inorder
+to generate the JSON wine dataset.
+  \item CouchDB has \verb|/{db}/_bulk_docs|
+endpoint that is used to create multiple documents with singe POST
+request~\cite{www-CouchdbBulkApi}. DatasetBulkLoadReadCouchDB.sh loads JSON wine dataset
+into CouchDB  'test' database using this POST call through curl command
+and measures the time taken to finish the bulk document load.
+
+  \item DatasetBulkLoadReadCouchDB.sh performs find document operation to find documents
+from wine dataset which have quality greater than 3 and measures the time taken to finish this find
+operation. This is accomplished by making POST call to
+\verb|/{db}/_find| endpoint which returns documents that meet query criteria~\cite{www-CouchdbFind}.
+
+  \item we wrote mapreduce function mapreducefun.js, which returns
+    total number of rows from wine dataset which have quality greater than 3. This mapreduce
+    function was uploaded to CouchDB design document to create view and GET call to
+    \verb|/db/_design/design-doc/_view/view-name| was
+    made~\cite{www-CouchdbView}. DatasetBulkLoadReadCouchDB.sh
+    executes this mapreduce function on wine dataset in CouchDB and
+    measures the time taken to finish execution of mapreduce.
+  \item The final step in DatasetBulkLoadReadCouchDB.sh is to gather
+    all the time duration from these mentioned operations and save
+    into csv file.
+
+\end{enumerate}
+
+\subsection{Benchmark Result Analysis}
+There were two aims of the benchmarking process for this project. One
+of the aims of the benchmarking process was to find the impact of
+number of shards on bulk documents load into CouchDB, find documents
+operation and map reduce on documents in CouchDB. The second aim of
+the process was to find the impact of number of replicas on bulk
+documents load into CouchDB, find documents operation and map reduce
+on documents in CouchDB. 
+
+\subsubsection{Number of Shards Impact on Bulk Load}
+\subsubsection{Number of Shards Impact on Document Find}
+\subsubsection{Number of Shards Impact on MapReduce}
 
 
 \section{Conclusion}

@@ -33,15 +33,15 @@ plotbench(df_shard['shard_val'],df_shard['Mapreducettime'],xlbl)
 
 """### Plots for analysing impact of replicas on bulkload, find and mapreduce"""
 # selecting values from data frame where we have fixed value for shard_val == 1
-df_shard = df[df.shard_val == 1]
-df_shard = df_shard.sort_values(by='replica_val', ascending=1)
+df_replica = df[df.shard_val == 1]
+df_replica = df_replica.sort_values(by='replica_val', ascending=1)
 
 # plot the line graph for shards vs bulkloadtime
 xlbl = 'Number of Replicas'
-plotbench(df_shard['replica_val'],df_shard['bulkloadtime'],xlbl)
+plotbench(df_replica['replica_val'],df_replica['bulkloadtime'],xlbl)
 
 # plot the line graph for shards vs find document time
-plotbench(df_shard['replica_val'],df_shard['finddocumenttime'],xlbl)
+plotbench(df_replica['replica_val'],df_replica['finddocumenttime'],xlbl)
 
 # plot the line graph for shards vs mapreduce time
-plotbench(df_shard['replica_val'],df_shard['Mapreducettime'],xlbl)
+plotbench(df_replica['replica_val'],df_replica['Mapreducettime'],xlbl)
