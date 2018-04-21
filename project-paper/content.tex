@@ -34,13 +34,23 @@
 
 CouchDB~\cite{www-Couchdb} is a no sql database management system
 under Apache. Data is stored as documents in CouchDB. In this project
-CouchDB cluster of one or more Chameleon cloud VMs is deployed using
-Ansible playbook and benchmarking is done to measure the time it took
-for deployement using Bash scripts. After installation of CouchDB
-cluster on Chameleon cloud VM, benchmarking test will be performed on
-measuring write and read time on CouchDB database. The dataset which
-was used for write and read on CouchDB is the wine quality dataset
-from UCI Machine Learning Repository~\cite{www-WineQuality}.
+CouchDB is deployed and configured on two Chameleon cloud virtual machines using
+Ansible playbook which is invoked through bash script. The two Chameleon
+cloud virtual machines have Ubuntu16.04 OS installed. The bash script
+couchdbinstall.sh by taking three command line parameters from user is
+able to install and configure CouchDB in single or cluster
+configuration.  This bash script also creates database with different
+number of shards and replicas. 
+
+Also in this project benchmarking tests were performed to find the
+impact of number of shards and replicas on time taken for bulk
+documents load into CouchDB, find documents operation and map reduce
+on documents in CouchDB. The bash script which is used to run the
+benchmarking tests is DatasetBulkLoadReadCouchDB.sh.  The dataset which
+was used for benchmarking tests on CouchDB is the wine quality dataset
+from UCI Machine Learning Repository~\cite{www-WineQuality}. The
+graphs used for the analysis of the benchmarking process were plotted
+using plotBenchmark.py python script. 
 
 \section{Ansible}
 Ansible is a tool that help automate software deployments, system
@@ -227,7 +237,7 @@ to generate the JSON wine dataset.
   \item CouchDB has \verb|/{db}/_bulk_docs|
 endpoint that is used to create multiple documents with singe POST
 request~\cite{www-CouchdbBulkApi}. DatasetBulkLoadReadCouchDB.sh loads JSON wine dataset
-into CouchDB  'test' database using this POST call through curl command
+into CouchDB  `test` database using this POST call through curl command
 and measures the time taken to finish the bulk document load.
 
   \item DatasetBulkLoadReadCouchDB.sh performs find document operation to find documents
@@ -244,7 +254,7 @@ operation. This is accomplished by making POST call to
     measures the time taken to finish execution of mapreduce.
   \item The final step in DatasetBulkLoadReadCouchDB.sh is to gather
     all the time duration from these mentioned operations and save
-    into csv file.
+    into csv file under /project-code/CouchDBBenchmark directory.
 
 \end{enumerate}
 
@@ -257,10 +267,33 @@ the process was to find the impact of number of replicas on bulk
 documents load into CouchDB, find documents operation and map reduce
 on documents in CouchDB. 
 
+Tests involving different combination of number of replicas and shards
+were performed and the results were captured in CSV files. All these
+CSV files were combined into one CSV file named CouchDBfinal.csv under
+/project-code/CouchDBBenchmark directory by running
+CombineBenchmark.sh bash script. Finally, we developed
+plotBenchmark.py python script that takes combined CSV files and plots
+the graphs which will be discussed in the sections to follow. 
+
+To asses the impact of number of shards, number of replicas was set to a
+constant value of 3 and tests were performed. The number of shards
+used were 1,2,4,6,10 and 12. To asses the impact of replicas, number
+of shards was set to a constant value of 1 and tests were
+performed. The number of replicas used were 1,2,3,4 and 6.
+
+
+
 \subsubsection{Number of Shards Impact on Bulk Load}
 
+
 Figure~\ref{f:shard-bulk} depicts the the impact of number of shards
-on bulk load documents to couchDB time in seconds.
+on bulk load documents to couchDB time in seconds. As it can be seen
+in the graph, it took 3 seconds to bulk load documents in couchDB when
+the number of shards was one. For the number of shards starting from
+two onwards, the bulk load time decreased to a value of 2 seconds and remained
+constant. It took less time for bulk load documents when the number of
+shards increased from one to two.
+
 \begin{figure}[!ht]
   \centering\includegraphics[width=\columnwidth]{../images/ShardsBulkLoad.png}
   \caption{Number of Shards vs Bulk Load Time in seconds }\label{f:shard-bulk}
@@ -269,14 +302,114 @@ on bulk load documents to couchDB time in seconds.
 
 
 \subsubsection{Number of Shards Impact on Document Find}
+
+
+Figure~\ref{f:shard-find} shows the impact of number of shards on find
+documents on CouchDB time in seconds. There was not any performace
+improvement of the time it took to find documents in CouchDB  by
+changing the value of the number of shards. As the it can be seen in
+~\ref{f:shard-find} the time for find documents remained at one second
+regardless of changing the the number of shards.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{../images/ShardsFindDoc.png}
+  \caption{Number of Shards vs Find Document Time in seconds }\label{f:shard-find}
+\end{figure}
+
 \subsubsection{Number of Shards Impact on MapReduce}
 
 
+Figure~\ref{f:shard-mapreduce} shows the impact of number of shards on
+mapreduce process on CouchDB time in seconds. When the number of shards was one, it took 4 seconds to finish
+the mapreduce operation. It took 3 seconds to finish
+the mapreduce operation when the values of shards were between two and
+six. There was a performance
+improvement for time taken for performing mapreduce operations when
+the number of shards two, four and six.  The time duration started to
+go up after increasing the number of shards to eight and above. There
+is no performance improvement on the time for mapreduce operations by
+increasing the number of shards greater than six.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{../images/ShardsMapReduce.png}
+  \caption{Number of Shards vs Mapreduce Time in seconds }\label{f:shard-mapreduce}
+\end{figure}
+
+\subsubsection{Number of Replicas Impact on Bulk Load}
+
+
+Figure~\ref{f:replica-bulk} depicts the the impact of number of replicas
+on bulk load documents to couchDB time in seconds. As it can be seen
+in the graph, it took 3 seconds to bulk load documents in couchDB when
+the number of replicas was one. There was a decrease in time
+taken when the number of replicas was two. Then as the value of
+replicas increased to three and above the time it took for documents
+bulk load increased to 3 seconds and remained the same. The increase
+of time as the number of replicas increases is expected because the
+documents have to copied the same number of times as the number of
+replicas. 
+
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{../images/ReplicasBulkLoad.png}
+  \caption{Number of Replicas vs Bulk Load Time in seconds }\label{f:replica-bulk}
+\end{figure}
+
+\subsubsection{Number of Replicas Impact on Document Find}
+
+
+Figure~\ref{f:replica-find} shows the impact of number of replicas on find
+documents on CouchDB time in seconds. There was not any performace
+improvement of the time it took to find documents in CouchDB  by
+changing the value of the number of replicas. As the it can be seen in
+~\ref{f:replica-find} the time for find documents remained at one second
+regardless of changing the the number of replicas.
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{../images/ReplicasFindDoc.png}
+  \caption{Number of Replicas vs Find Document Time in seconds }\label{f:replica-find}
+\end{figure}
+
+\subsubsection{Number of Replicas Impact on MapReduce}
+
+
+Figure~\ref{f:replica-mapreduce} shows the impact of number of replicas on
+mapreduce process on CouchDB time in seconds. The time it took for
+mapreduce operation was 3 seconds for one, two and six replicas. For
+replicas three and four mapreduce operation took 4 seconds. The
+variations in time could be related to network speeds at the time of
+executing the tests as these API requests are made through network. 
+
+\begin{figure}[!ht]
+  \centering\includegraphics[width=\columnwidth]{../images/ReplicasMapReduce.png}
+  \caption{Number of Replicas vs Mapreduce Time in seconds }\label{f:replica-mapreduce}
+\end{figure}
+
 \section{Conclusion}
-TBD
+This project succesfully deployed and configured CouchDB  on two virtual machines
+on Chameleon cloud using Ansible playbook which is invoked through
+bash script. The bash script also allowed CouchDB to be configured in
+single node or cluster configuration and created database with
+different number of shards and replicas. Although for the purpose of
+this project only two virtual machines on Chameleon cloud were used,
+the Ansible script will be able to support installation of CouchDB to more
+than two virtual machines by providing more host IP addresses under
+inventory.txt for Ansible.
+
+Analysis of benchmarking tests showed that there was not any performace
+improvement of the time it took to find documents in CouchDB  by
+changing the value of the number of shards or replicas. For number
+shards between two to six, there was a performance improvement for
+time taken for performing mapreduce operations. In general, mapreduce
+took more time than find documents operation for different number
+shards and replicas, which could be the result of mapreduce using
+JavaScript query for map and reduce operations.
+
+
 \section*{Acknowledgements}
 
-TBD
+The author would like to thank Professor Gregor von Laszewski and
+associate instructors for their help and guidance.
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{report} 
