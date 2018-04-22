@@ -327,7 +327,9 @@ CSV files were combined into one CSV file named CouchDBfinal.csv under
 /project-code/CouchDBBenchmark directory by running
 CombineBenchmark.sh bash script. Finally, we developed
 plotBenchmark.py python script that takes combined CSV files and plots
-the graphs which will be discussed in the sections to follow. 
+the graphs which will be discussed in the sections to follow. For the
+purpose of reproducing the graphs in this project in the future, CSV file used
+CouchDBfinal.csv is saved under project-artifact directory. 
 
 To asses the impact of number of shards, number of replicas was set to a
 constant value of 3 and tests were performed. The number of shards
@@ -520,6 +522,10 @@ CouchDBBenchmark directory.
 \subsection{Combining CSV files}
 To combine all CSV files from Benchmarking tests into one file named CouchDBfinal.csv run
 ./CombineBenchmark.sh 
+
+
+A copy of this file is also saved under project-artifact if needed in
+the future to reproduce the graphs in this project
 
 \subsection{Plotting graphs for Benchmark Tests}
 To Plot the graphs for benchmarking analysis run the 
