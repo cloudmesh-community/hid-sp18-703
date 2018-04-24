@@ -42,8 +42,8 @@ CouchDB~\cite{www-Couchdb} is a NoSQL database management system
 under Apache. Data is stored as documents in CouchDB. In this project
 CouchDB is deployed and configured on two Chameleon Cloud virtual machines using
 Ansible playbook which is invoked through bash script. The two Chameleon
-Cloud virtual machines have Ubuntu16.04 OS installed. The bash script
-couchdbinstall.sh, by taking three command line parameters from user is
+Cloud virtual machines have Ubuntu16.04 OS installed. The bash script, 
+\verb|couchdbinstall.sh|, by taking three command line parameters from user is
 able to install and configure CouchDB in single or cluster
 configuration.  This bash script also creates database with different
 number of shards and replicas. 
@@ -51,12 +51,12 @@ number of shards and replicas.
 Also in this project benchmarking tests were performed to find the
 impact of number of shards and replicas on time taken for bulk
 documents load into CouchDB, find documents operation and mapreduce
-operation on documents in CouchDB. The bash script which is used to run the
-benchmarking tests is DatasetBulkLoadReadCouchDB.sh.  The dataset which
+operation on documents in CouchDB. The bash script \verb|DatasetBulkLoadReadCouchDB.sh| is used to run the
+benchmarking tests.  The dataset which
 was used for benchmarking tests on CouchDB is the wine quality dataset
 from UCI Machine Learning Repository~\cite{www-WineQuality}. The
 graphs used for the analysis of the benchmarking process were plotted
-using plotBenchmark.py python script which utilizes pandas and
+using \verb|plotBenchmark.py| python script which utilizes pandas and
 matplotlib libraries.
 
 \section{Ansible}
@@ -201,36 +201,36 @@ following preparation steps.
 
 \subsection{couchdbinstall.sh}
 
-The bash script couchdbinstall.sh, takes three command line inputs
+The bash script \verb|couchdbinstall.sh|, takes three command line inputs
 from the user. First parameter tells the script whether to install
 CouchDB in single node or cluster configuration. The second input
 represents the
 number of replicas. The third input is the number of shards. An
-example command looks like `./couchdbinstall.sh true 3 8` which
+example command looks like \verb|./couchdbinstall.sh true 3 8| which
 deploys CouchDB in cluster configuration and creates a database with 3
 replicas and 8 shards.
 
 The Ansible script that deploys CouchDB and it's dependencies are run
-within couchdbinstall.sh. This script also creates CSV file which
+within \verb|couchdbinstall.sh|. This script also creates CSV file which
 contains information about cluster setup, number of replicas, number
 of shards and the time it took for couchDB install.
 
 \subsection{Ansible Scripts}
-All Ansible scripts reside under /project-code/couchdbansible
+All Ansible scripts reside under \verb|/project-code/couchdbansible|
 directory. 
 \begin{enumerate}
-  \item playbook.yml- defines the hosts on which CouchDB will be
-    installed and the role name. This file along with inventory.txt is
-    needed when runing Ansible playbook.
+  \item \verb|playbook.yml|- defines the hosts on which CouchDB will be
+    installed and the role name. This file along with \verb|inventory.txt|
+    file are needed when runing Ansible playbook.
 
-  \item main.yml-this file which is found under /roles/couchdb/tasks
+  \item \verb|main.yml|- resides under \verb|/roles/couchdb/tasks|
     directory and this where all the installation tasks are
     defined. Some of the tasks defined are installation of Python
     pandas library since the virtual machines in Chameleon did not have pandas
     installed, installation of CouchDB 2.1.1 and all it's dependencies
     and database creation after the installation of CouchDB.
 
-  \item vmargs.j2- under /roles/couchdb/templates directory, template
+  \item \verb|vmargs.j2|- under \verb|/roles/couchdb/templates| directory, template
     file that defines the CouchDB node names with the correct IP addresses.
 \end{enumerate}
 
@@ -264,13 +264,13 @@ in cluser configuration with two nodes configuration, 4 replicas and
 The dataset that was used for the benchmarking process for this
 project is the white vinho verde varient of Portuguese wine sample
 from UCI Machine Learning Repository. The size of the dataset used for
-this project winequality-white.csv is 258KB. The dataset was in CSV file
+this project \verb|winequality-white.csv| is 258KB. The dataset was in CSV file
 format and contains twelve different attributes related to wine such
 as fixed acidity,pH, alcohol and quality~\cite{www-WineQuality}. 
 
 Since CouchDB bulk load process only accepts file in proper JSON
 format, \verb|csv_to_json.py| python script was used to download the
-white wine dataset (winequality-white.csv) directly from UCI Machine
+white wine dataset (\verb|winequality-white.csv|) directly from UCI Machine
 Learning Repository and convert the CSV file into JSON format by utilizing
 pandas and urllib Python libraries. After converting into CouchDB
 compatible JSON format the dataset size was 1.1MB.
@@ -287,12 +287,12 @@ dataset in CouchDB. It also measures the time taken for each operation.
     this script inorder to generate the JSON wine dataset.
   \item CouchDB has \verb|/{db}/_bulk_docs| endpoint that is used to
     create multiple documents with singe POST
-    request~\cite{www-CouchdbBulkApi}. DatasetBulkLoadReadCouchDB.sh
-    loads JSON wine dataset into `test` database in CouchDB  using
+    request~\cite{www-CouchdbBulkApi}. \verb|DatasetBulkLoadReadCouchDB.sh|
+    loads JSON wine dataset into `test` database in CouchDB  using 
     this POST call through curl command. Then measures the time taken
     to finish the bulk documents load operation.
 
-  \item DatasetBulkLoadReadCouchDB.sh performs find document operation
+  \item \verb|DatasetBulkLoadReadCouchDB.sh| performs find document operation
     to find documents from wine dataset which have quality greater
     than 3. Then measures the time taken to finish this find
     operation. The find operation is accomplished by making POST call
@@ -306,7 +306,7 @@ dataset in CouchDB. It also measures the time taken for each operation.
     made~\cite{www-CouchdbView}. DatasetBulkLoadReadCouchDB.sh
     executes this mapreduce function on wine dataset in CouchDB and
     measures the time taken to finish execution of mapreduce.
-  \item The final step in DatasetBulkLoadReadCouchDB.sh is to gather
+  \item The final step in \verb|DatasetBulkLoadReadCouchDB.sh| is to gather
     all the time durations from these mentioned operations and save
     into CSV file under /CouchDBBenchmark directory.
 
@@ -323,13 +323,13 @@ on documents in CouchDB.
 
 Tests involving different combination of number of replicas and shards
 were performed and the results were captured in CSV files. All these
-CSV files were combined into one CSV file named CouchDBfinal.csv under
-/project-code/CouchDBBenchmark directory by running
-CombineBenchmark.sh bash script. Finally, we developed
-plotBenchmark.py python script that takes combined CSV files and plots
+CSV files were combined into one CSV file named \verb|CouchDBfinal.csv| under
+\verb|/project-code/CouchDBBenchmark| directory by running
+\verb|CombineBenchmark.sh| bash script. Finally, we developed
+\verb|plotBenchmark.py| python script that takes combined CSV files and plots
 the graphs which will be discussed in the sections to follow. For the
 purpose of reproducing the graphs in this project in the future, CSV file used
-CouchDBfinal.csv is saved under project-artifact directory. 
+\verb|CouchDBfinal.csv| is saved under \verb|project-artifact directory|. 
 
 To asses the impact of number of shards, number of replicas was set to a
 constant value of 3 and tests were performed. The number of shards
@@ -471,6 +471,7 @@ associate instructors for their help and guidance.
 \bibliography{report} 
 \appendix
 \section{Project Code Execution}
+
 All the codes for this project are under project-code
 directory. There are three directories under project-code.
 \begin{itemize}
@@ -497,8 +498,8 @@ perform the following preparation steps.
 \end{enumerate}
 
 \subsection{Deploy CouchDB}
-To deploy CouchDB, on command prompt cd to project-code/ directory and run
-couchdbinstall.sh as providing three parameters. 
+To deploy CouchDB, on command prompt cd to \verb|project-code/| directory and run
+\verb|couchdbinstall.sh| as providing three parameters. 
 \begin{enumerate}
   \item First parameter takes true or false to indicate whether to
     install CouchDB in single node or cluster
@@ -510,28 +511,36 @@ couchdbinstall.sh as providing three parameters.
 An example command
 
 
+\begin{verbatim} 
 ./couchdbinstall.sh true 3 8 
+\end{verbatim}
 
 \subsection{Benchmark Tests}
-To run benchmark tests, on command prompt cd to project-code/ directory and run
+To run benchmark tests, on command prompt cd to \verb|project-code/| directory and run
+\begin{verbatim}
 ./BulkLoadReadCouchDB.sh
+\end{verbatim}
 This script performs different benchmark tests and saves all the time
 durations into CSV file name starting with \verb|benchmark_| under
-CouchDBBenchmark directory.
+\verb|CouchDBBenchmark| directory.
 
 \subsection{Combining CSV files}
-To combine all CSV files from Benchmarking tests into one file named CouchDBfinal.csv run
+To combine all CSV files from benchmarking tests into one file named \verb|CouchDBfinal.csv| run
+\begin{verbatim}
 ./CombineBenchmark.sh 
+\end{verbatim}
 
 
-A copy of this file is also saved under project-artifact if needed in
+A copy of this file is also saved under \verb|project-artifact| if needed in
 the future to reproduce the graphs in this project
 
 \subsection{Plotting graphs for Benchmark Tests}
 To Plot the graphs for benchmarking analysis run the 
-plotBenchmark.py script from command line as follows
-
+\verb|plotBenchmark.py| script from command line as follows
+\begin{verbatim}
 python plotBenchmark.py
+\end{verbatim}
+
 
 
 
