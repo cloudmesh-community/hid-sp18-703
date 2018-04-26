@@ -4,10 +4,9 @@ Project Code Execution
 All the codes for this project are under project-code
 directory. There are three directories under project-code.
 
-   CouchDBBenchmark which contains CSV files from deployment and
+  * CouchDBBenchmark which contains CSV files from deployment and
     benchmarking processes.  
-  couchdbansible which contains Ansible scripts
-  logs which contains console output logs
+  * couchdbansible which contains Ansible scripts logs which contains console output logs
 
 
  Before starting the deployment of CouchDB, user have to
@@ -24,17 +23,17 @@ perform the following preparation steps.
       goes under [couchdb_Coordination_host] section of inventory.txt
       and the second IP address goes under [couchdb_hosts].
       
-      Deploy CouchDB
+Deploy CouchDB
 =============
 
 To deploy CouchDB, on command prompt cd to project-code/ directory and run
 couchdbinstall.sh as providing three parameters. 
 
-  First parameter takes true or false to indicate whether to
+  * First parameter takes true or false to indicate whether to
     install CouchDB in single node or cluster
-  Second parameter is an integer number for the value of
+  * Second parameter is an integer number for the value of
       replica
-  Third parameter is an integer number for the value of
+  * Third parameter is an integer number for the value of
       shard
 
 An example command
