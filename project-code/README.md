@@ -13,11 +13,11 @@ directory. There are three directories under project-code.
  Before starting the deployment of CouchDB, user have to
 perform the following preparation steps.
 
- Start two Instances in Chameleon Cloud with the specification
- Allocate floating IPs to the instance created
- Add  security rules as mentioned under Security section
+ * Start two Instances in Chameleon Cloud with the specification
+ * Allocate floating IPs to the instance created
+ * Add  security rules as mentioned under Security section
       of this report to the two instances 
- User has to manually insert the IP addresses by modifying
+ * User has to manually insert the IP addresses by modifying
       inventory.txt file which is found under project-code
       /couchdbansible directory. There are two hosts 
       defined under inventory.txt. One of the IP addresses
