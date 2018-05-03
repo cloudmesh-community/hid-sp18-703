@@ -23,12 +23,12 @@
 
 
 \begin{abstract}
-  This project focuses on deployment of CouchDB Cluster using Ansible
+  This paper focuses on deployment of CouchDB Cluster using Ansible
   playbook on Ubuntu16.04 OS virtual machines on Chameleon Cloud by
   using Ansible script which is invoked by bash script. The deployment
   process provides the option of installing CouchDB version 2.1.1 in single node or
   cluster configuration. The deployment process also involves creation
-  of database in CouchDB with different number of shards and replication. Part of this project
+  of database in CouchDB with different number of shards and replication. Part of this paper
   also focuses on performing  benchmarking tests and analysis to asses the
   performance of CouchDB write, read and mapreduce tasks by variying
   the number of shards and replicas. 
@@ -51,7 +51,7 @@ able to install and configure CouchDB in single or cluster
 configuration.  This bash script also creates database with different
 number of shards and replicas. 
 
-Also in this project benchmarking tests were performed to find the
+Benchmarking tests were performed to find the
 impact of number of shards and replicas on time taken for bulk
 documents load into CouchDB, find documents operation and mapreduce
 operation on documents in CouchDB. The bash script \verb|DatasetBulkLoadReadCouchDB.sh| is used to run the
@@ -68,7 +68,7 @@ configuration and continues deployment of applications. Automation
 tasks are defined in Ansible Playbooks using YAML language. For
 transportation, Ansible uses OpenSSH~\cite{www-Ansible}. 
 
-For this project, Ansible was used to install CouchDB, configure
+Ansible was used to install CouchDB, configure
 CouchDB in single node or cluster configuration and to create database
 in CouchDB with different number of replicas and shards configurations on
 Chameleon Cloud virtual machines.
@@ -83,7 +83,8 @@ Service and vitual technologies. Both Bare metal and OpenStack Virtual
 environments are available for researchers to use on Chameleon
 project~\cite{www-Chameleon}. 
 
-For this project, OpenStack virtual machines were used. Launching of
+OpenStack virtual machines were used for deloyment and benchmarking of
+CouchDB. Launching of
 new  virtual machine instances, assigning IP addresses to instances,
 assigning security groups and other virtual management tasks were done
 through the OpenStack web user interface~\cite{www-ChameleonDoc}. 
@@ -130,7 +131,7 @@ use mapreduce model and they are stored under the design
 documents~\cite{www-Couchdb}.  
 
 \subsection{Version}
-The version of CouchDB used for this project is version 2.1.1 and this
+The version of CouchDB used for the deployment process is version 2.1.1 and this
 is the current version at the time of writing this report.
 
 \subsection{Architecture}
@@ -162,7 +163,7 @@ other. These ports should be opened to accept TCP protocol for all the
 servers or virtual machines that are in the
 cluster~\cite{www-CouchdbSetup}. 
 
-In the deployment for this project, security group rules were
+In the deployment of CouchDB, security group rules were
 created in Chameleon Cloud which opened inbound TCP protocol for ports
 5984, 5986 and 9100-9200.
 
@@ -209,9 +210,11 @@ from the user. First parameter tells the script whether to install
 CouchDB in single node or cluster configuration. The second input
 represents the
 number of replicas. The third input is the number of shards. An
-example command looks like \verb|./couchdbinstall.sh true 3 8| which
-deploys CouchDB in cluster configuration and creates a database with 3
-replicas and 8 shards.
+example command which deploys CouchDB in cluster configuration and creates a database with 3
+replicas and 8 shards looks like:
+
+\verb|./couchdbinstall.sh true 3 8|
+
 
 The Ansible script that deploys CouchDB and it's dependencies are run
 within \verb|couchdbinstall.sh|. This script also creates CSV file which
@@ -263,11 +266,12 @@ in cluser configuration with two nodes configuration, 4 replicas and
 \end{table}
 
 \section{Benchmark Results}
+The results of benchmarking process that was performed to assess the impact of variying
+  the number of shards and replicas on performance of CouchDB write,
+  read and mapreduce tasks will be discussed in this section. 
 \subsection{Dataset}
-The dataset that was used for the benchmarking process for this
-project is the white vinho verde varient of Portuguese wine sample
-from UCI Machine Learning Repository. The size of the dataset used for
-this project \verb|winequality-white.csv| is 258KB. The dataset was in CSV file
+The dataset that was used for the benchmarking process is the white vinho verde varient of Portuguese wine sample
+from UCI Machine Learning Repository. The size of the dataset used \verb|winequality-white.csv| is 258KB. The dataset was in CSV file
 format and contains twelve different attributes related to wine such
 as fixed acidity,pH, alcohol and quality~\cite{www-WineQuality}. 
 
@@ -316,7 +320,7 @@ dataset in CouchDB. It also measures the time taken for each operation.
 \end{enumerate}
 
 \subsection{Benchmark Result Analysis}
-There were two aims of the benchmarking process for this project. One
+There were two aims of the benchmarking process. One
 of the aims of the benchmarking process was to find the impact of
 number of shards on bulk documents load into CouchDB, find documents
 operation and map reduce on documents in CouchDB. The second aim of
@@ -354,7 +358,7 @@ constant. It took less time for bulk load documents when the number of
 shards increased from one to two.
 
 \begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../images/ShardsBulkLoad.png}
+  \centering\includegraphics[width=\columnwidth]{../images/ShardsBulkLoad.pdf}
   \caption{Number of Shards vs Bulk Load Time in seconds }\label{f:shard-bulk}
 \end{figure}
 
@@ -371,7 +375,7 @@ changing the value of the number of shards. As the it can be seen in
 regardless of changing the the number of shards.
 
 \begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../images/ShardsFindDoc.png}
+  \centering\includegraphics[width=\columnwidth]{../images/ShardsFindDoc.pdf}
   \caption{Number of Shards vs Find Document Time in seconds }\label{f:shard-find}
 \end{figure}
 
@@ -389,7 +393,7 @@ is no performance improvement on the time for mapreduce operations by
 increasing the number of shards greater than six.
 
 \begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../images/ShardsMapReduce.png}
+  \centering\includegraphics[width=\columnwidth]{../images/ShardsMapReduce.pdf}
   \caption{Number of Shards vs Mapreduce Time in seconds }\label{f:shard-mapreduce}
 \end{figure}
 
@@ -409,7 +413,7 @@ replicas.
 
 
 \begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../images/ReplicasBulkLoad.png}
+  \centering\includegraphics[width=\columnwidth]{../images/ReplicasBulkLoad.pdf}
   \caption{Number of Replicas vs Bulk Load Time in seconds }\label{f:replica-bulk}
 \end{figure}
 
@@ -424,7 +428,7 @@ changing the value of the number of replicas. As the it can be seen in
 regardless of changing the the number of replicas.
 
 \begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../images/ReplicasFindDoc.png}
+  \centering\includegraphics[width=\columnwidth]{../images/ReplicasFindDoc.pdf}
   \caption{Number of Replicas vs Find Document Time in seconds }\label{f:replica-find}
 \end{figure}
 
@@ -439,17 +443,17 @@ variations in time could be related to network speeds at the time of
 executing the tests as these API requests are made through network. 
 
 \begin{figure}[!ht]
-  \centering\includegraphics[width=\columnwidth]{../images/ReplicasMapReduce.png}
+  \centering\includegraphics[width=\columnwidth]{../images/ReplicasMapReduce.pdf}
   \caption{Number of Replicas vs Mapreduce Time in seconds }\label{f:replica-mapreduce}
 \end{figure}
 
 \section{Conclusion}
-This project succesfully deployed and configured CouchDB  on two virtual machines
+We have succesfully deployed and configured CouchDB  on two virtual machines
 on Chameleon cloud using Ansible playbook which is invoked through
 bash script. The bash script also allowed CouchDB to be configured in
 single node or cluster configuration and created database with
 different number of shards and replicas. Although for the purpose of
-this project only two virtual machines on Chameleon cloud were used,
+this paper only two virtual machines on Chameleon cloud were used,
 the Ansible script will be able to support installation of CouchDB to more
 than two virtual machines by providing more host IP addresses under
 inventory.txt for Ansible.
