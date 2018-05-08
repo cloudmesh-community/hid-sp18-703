@@ -26,12 +26,13 @@
   This paper focuses on deployment of CouchDB Cluster using Ansible
   playbook on Ubuntu16.04 OS virtual machines on Chameleon Cloud by
   using Ansible script which is invoked by bash script. The deployment
-  process provides the option of installing CouchDB version 2.1.1 in single node or
-  cluster configuration. The deployment process also involves creation
-  of database in CouchDB with different number of shards and replication. Part of this paper
-  also focuses on performing  benchmarking tests and analysis to asses the
-  performance of CouchDB write, read and mapreduce tasks by variying
-  the number of shards and replicas. 
+  process provides the option of installing CouchDB version 2.1.1 in
+  single node or cluster configuration. The deployment process also
+  involves creation of database in CouchDB with different number of
+  shards and replication. Part of this paper also focuses on
+  performing benchmarking tests and analysis to asses the performance
+  of CouchDB write, read and mapreduce tasks by variying the number of
+  shards and replicas.
 \end{abstract}
 
 \keywords{hid-sp18-703, CouchDB, Ansible, Chameleon Cloud}
@@ -266,21 +267,27 @@ in cluser configuration with two nodes configuration, 4 replicas and
 \end{table}
 
 \section{Benchmark Results}
-The results of benchmarking process that was performed to assess the impact of variying
-  the number of shards and replicas on performance of CouchDB write,
-  read and mapreduce tasks will be discussed in this section. 
+
+The results of benchmarking process that was performed to assess the
+impact of variying the number of shards and replicas on performance of
+CouchDB write, read and mapreduce tasks will be discussed in this
+section.
+
 \subsection{Dataset}
-The dataset that was used for the benchmarking process is the white vinho verde varient of Portuguese wine sample
-from UCI Machine Learning Repository. The size of the dataset used \verb|winequality-white.csv| is 258KB. The dataset was in CSV file
+
+The dataset that was used for the benchmarking process is the white
+vinho verde varient of Portuguese wine sample from UCI Machine
+Learning Repository. The size of the dataset used
+\verb|winequality-white.csv| is 258KB. The dataset was in CSV file
 format and contains twelve different attributes related to wine such
-as fixed acidity,pH, alcohol and quality~\cite{www-WineQuality}. 
+as fixed acidity,pH, alcohol and quality~\cite{www-WineQuality}.
 
 Since CouchDB bulk load process only accepts file in proper JSON
 format, \verb|csv_to_json.py| python script was used to download the
-white wine dataset (\verb|winequality-white.csv|) directly from UCI Machine
-Learning Repository and convert the CSV file into JSON format by utilizing
-pandas and urllib Python libraries. After converting into CouchDB
-compatible JSON format the dataset size was 1.1MB.
+white wine dataset (\verb|winequality-white.csv|) directly from UCI
+Machine Learning Repository and convert the CSV file into JSON format
+by utilizing pandas and urllib Python libraries. After converting into
+CouchDB compatible JSON format the dataset size was 1.1MB.
 
 \subsection{DatasetBulkLoadReadCouchDB.sh}
 This is the script when executed, loads the JSON wine sample dataset
@@ -295,7 +302,7 @@ dataset in CouchDB. It also measures the time taken for each operation.
   \item CouchDB has \verb|/{db}/_bulk_docs| endpoint that is used to
     create multiple documents with singe POST
     request~\cite{www-CouchdbBulkApi}. \verb|DatasetBulkLoadReadCouchDB.sh|
-    loads JSON wine dataset into `test` database in CouchDB  using 
+    loads JSON wine dataset into \emph{test} database in CouchDB  using 
     this POST call through curl command. Then measures the time taken
     to finish the bulk documents load operation.
 
@@ -307,15 +314,17 @@ dataset in CouchDB. It also measures the time taken for each operation.
     query criteria~\cite{www-CouchdbFind}. 
 
   \item We wrote mapreduce function mapreducefun.js, which returns
-    total number of rows from wine dataset which have quality greater than 3. This mapreduce
-    function was uploaded to CouchDB design document to create view and GET call to
+    total number of rows from wine dataset which have quality greater
+    than 3. This mapreduce function was uploaded to CouchDB design
+    document to create view and GET call to
     \verb|/db/_design/design-doc/_view/view-name| was
     made~\cite{www-CouchdbView}. DatasetBulkLoadReadCouchDB.sh
     executes this mapreduce function on wine dataset in CouchDB and
     measures the time taken to finish execution of mapreduce.
-  \item The final step in \verb|DatasetBulkLoadReadCouchDB.sh| is to gather
-    all the time durations from these mentioned operations and save
-    into CSV file under /CouchDBBenchmark directory.
+
+  \item The final step in \verb|DatasetBulkLoadReadCouchDB.sh| is to
+    gather all the time durations from these mentioned operations and
+    save into CSV file under /CouchDBBenchmark directory.
 
 \end{enumerate}
 
@@ -330,13 +339,14 @@ on documents in CouchDB.
 
 Tests involving different combination of number of replicas and shards
 were performed and the results were captured in CSV files. All these
-CSV files were combined into one CSV file named \verb|CouchDBfinal.csv| under
-\verb|/project-code/CouchDBBenchmark| directory by running
-\verb|CombineBenchmark.sh| bash script. Finally, we developed
-\verb|plotBenchmark.py| python script that takes combined CSV files and plots
-the graphs which will be discussed in the sections to follow. For the
-purpose of reproducing the graphs in this project in the future, CSV file used
-\verb|CouchDBfinal.csv| is saved under \verb|project-artifact directory|. 
+CSV files were combined into one CSV file named
+\verb|CouchDBfinal.csv| under \verb|/project-code/CouchDBBenchmark|
+directory by running \verb|CombineBenchmark.sh| bash script. Finally,
+we developed \verb|plotBenchmark.py| python script that takes combined
+CSV files and plots the graphs which will be discussed in the sections
+to follow. For the purpose of reproducing the graphs in this project
+in the future, CSV file used \verb|CouchDBfinal.csv| is saved under
+\verb|project-artifact directory|.
 
 To asses the impact of number of shards, number of replicas was set to a
 constant value of 3 and tests were performed. The number of shards
@@ -352,10 +362,10 @@ performed. The number of replicas used were 1,2,3,4 and 6.
 Figure~\ref{f:shard-bulk} depicts the the impact of number of shards
 on bulk load documents to couchDB time in seconds. As it can be seen
 in the graph, it took 3 seconds to bulk load documents in couchDB when
-the number of shards was one. For number of shards starting from
-two onwards, the bulk load time decreased to a value of 2 seconds and remained
-constant. It took less time for bulk load documents when the number of
-shards increased from one to two.
+the number of shards was one. For number of shards starting from two
+onwards, the bulk load time decreased to a value of 2 seconds and
+remained constant. It took less time for bulk load documents when the
+number of shards increased from one to two.
 
 \begin{figure}[!ht]
   \centering\includegraphics[width=\columnwidth]{../images/ShardsBulkLoad.pdf}
@@ -383,13 +393,14 @@ regardless of changing the the number of shards.
 
 
 Figure~\ref{f:shard-mapreduce} shows the impact of number of shards on
-mapreduce process on CouchDB time in seconds. When the number of shards was one, it took 4 seconds to finish
-the mapreduce operation. It took 3 seconds to finish
-the mapreduce operation when the values of shards were between two and
-six. There was a performance
-improvement for time taken for performing mapreduce operations for shards two, four and six.  The time duration started to
-go up after increasing the number of shards to eight and above. There
-is no performance improvement on the time for mapreduce operations by
+mapreduce process on CouchDB time in seconds. When the number of
+shards was one, it took 4 seconds to finish the mapreduce
+operation. It took 3 seconds to finish the mapreduce operation when
+the values of shards were between two and six. There was a performance
+improvement for time taken for performing mapreduce operations for
+shards two, four and six.  The time duration started to go up after
+increasing the number of shards to eight and above. There is no
+performance improvement on the time for mapreduce operations by
 increasing the number of shards greater than six.
 
 \begin{figure}[!ht]
@@ -448,24 +459,25 @@ executing the tests as these API requests are made through network.
 \end{figure}
 
 \section{Conclusion}
-We have succesfully deployed and configured CouchDB  on two virtual machines
-on Chameleon cloud using Ansible playbook which is invoked through
-bash script. The bash script also allowed CouchDB to be configured in
-single node or cluster configuration and created database with
-different number of shards and replicas. Although for the purpose of
-this paper only two virtual machines on Chameleon cloud were used,
-the Ansible script will be able to support installation of CouchDB to more
-than two virtual machines by providing more host IP addresses under
-inventory.txt for Ansible.
 
-Analysis of benchmarking tests showed that there was not any performace
-improvement of the time it took to find documents in CouchDB  by
-changing the value of the number of shards or replicas. For number
-shards between two to six, there was a performance improvement for
-time taken for performing mapreduce operations. In general, mapreduce
-took more time than find documents operation for different number
-shards and replicas, which could be the result of mapreduce using
-JavaScript query server for map and reduce operations.
+We have succesfully deployed and configured CouchDB on two virtual
+machines on Chameleon cloud using Ansible playbook which is invoked
+through bash script. The bash script also allowed CouchDB to be
+configured in single node or cluster configuration and created
+database with different number of shards and replicas. Although for
+the purpose of this paper only two virtual machines on Chameleon cloud
+were used, the Ansible script will be able to support installation of
+CouchDB to more than two virtual machines by providing more host IP
+addresses under inventory.txt for Ansible.
+
+Analysis of benchmarking tests showed that there was not any
+performace improvement of the time it took to find documents in
+CouchDB by changing the value of the number of shards or replicas. For
+number shards between two to six, there was a performance improvement
+for time taken for performing mapreduce operations. In general,
+mapreduce took more time than find documents operation for different
+number shards and replicas, which could be the result of mapreduce
+using JavaScript query server for map and reduce operations.
 
 
 \section*{Acknowledgements}
